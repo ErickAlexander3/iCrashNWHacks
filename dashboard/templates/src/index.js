@@ -25,19 +25,35 @@ class SideNav extends React.Component{
 class ProgressBar extends React.Component{
     constructor(props){
       super(props);
+      this.state = {seconds:0};
     }
 
+    tick(){
+      this.setState(state => ({
+        seconds: state.seconds + 1
+      }));
+    }
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
     render(){
+
       return (
         <div>
           <div>
               <div>
-                  <div><p>Time Escaping</p></div>
+                  <div><p> {this.state.seconds} s</p></div>
               </div>
           </div>
           <div>
               <div>
-                <div><p>Money to be Paid</p></div>
+                <div><p>30 CAD</p></div>
               </div>
           </div>
         </div>
@@ -48,17 +64,21 @@ class ProgressBar extends React.Component{
   class ParkingSummary extends React.Component{
     constructor(props){
       super(props);
+      // this.state = {var myData = JSON.parse(myjsonstring)};
     }
+
+    
 
     render() {
       return (
       <div>
           <h3>Your Parking Summary</h3>
-          <BootstrapTable data={""} options={ { noDataText: 'This is custom text for empty data' } }>
-              <TableHeaderColumn dataField='date' isKey={ true }>Date</TableHeaderColumn>
-              <TableHeaderColumn dataField='time'>How much time you have been parking on that day</TableHeaderColumn>
-              <TableHeaderColumn dataField='cost'>How much you need to pay</TableHeaderColumn>
-              <TableHeaderColumn dataField='paid'>paid or click here to pay</TableHeaderColumn>
+          <BootstrapTable>
+              <TableHeaderColumn dataField='date' isKey={ true }>2019-01-26</TableHeaderColumn>
+              <TableHeaderColumn dataField='time'> 2 hours of parking </TableHeaderColumn>
+              <TableHeaderColumn dataField='cost'>60 CAD</TableHeaderColumn>
+              <TableHeaderColumn dataField='lotNum'>at Parking #123</TableHeaderColumn>
+              <TableHeaderColumn dataField='paid'><button>paid or click here to pay</button></TableHeaderColumn>
           </BootstrapTable>
         </div>
       );
