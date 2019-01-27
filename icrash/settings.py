@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dashboard'
 ]
 
 MIDDLEWARE = [
@@ -97,7 +98,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'HOST': '127.0.0.1',
-            'PORT': '3306',
+            'PORT': '3307',
             'NAME': 'icrash',
             'USER': 'erick',
             'PASSWORD': 'icrashiscool',
