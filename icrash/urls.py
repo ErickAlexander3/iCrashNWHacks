@@ -17,7 +17,9 @@ from django.contrib import admin
 from django.urls import path
 
 from dashboard import views as dashboardViews
+from api import views as APIViews
 
 urlpatterns = [
 	path('', dashboardViews.home),
+	path('demo', APIViews.demo)
 ]

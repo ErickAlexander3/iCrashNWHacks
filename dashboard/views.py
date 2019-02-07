@@ -1,7 +1,7 @@
 from django.shortcuts import render
+from api.models import DemoEntries
 
 # Create your views here.
 
-import pdb
 def home(request):
-	return render(request, 'home.html')
+	return render(request, 'home.html', {'demo_entries': DemoEntries.objects.all()})
