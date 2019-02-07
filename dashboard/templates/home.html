@@ -1,4 +1,5 @@
 {% load static %}
+{% load tz %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -61,6 +62,25 @@
       <h1 class="text-uppercase mb-0">iCrash</h1>
       <hr class="star-light">
       <h2 class="font-weight-light mb-0">An IoT device to save you in the road</h2>
+      <hr class="my-4">
+      {% if user.is_authenticated %}
+        <div class="text-center mt-4">
+          <p class="lead">Welcome, {{ user.username }}</p>
+            <a class="btn btn-xl btn-outline-light col-md-4" href="{% url 'account_logout' %}">
+              Log out
+            </a>
+        </div>
+      {% else %}
+        <div class="text-center mt-4">
+          <a class="btn btn-xl btn-outline-light col-md-4" href="{% url 'account_login' %}">
+            Log in
+          </a>
+          <a class="btn btn-xl btn-outline-light col-md-4" href="{% url 'account_signup' %}">
+            Sign up
+          </a>
+        </div>
+      {% endif %}
+
     </div>
   </header>
 
@@ -83,7 +103,7 @@
               <tr>
                 <th scope="row">{{ entry.id }}</th>
                 <td>{{ entry.text }}</td>
-                <td>{{ entry.save_time }}</td>
+                <td>{{ entry.save_time | localtime }}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -100,10 +120,10 @@
       <hr class="star-light mb-5">
       <div class="row">
         <div class="col-lg-4 ml-auto">
-          <p class="lead">iCrash is soemthing something.</p>
+          <p class="lead">iCrash is under development right now.</p>
         </div>
         <div class="col-lg-4 mr-auto">
-          <p class="lead">Hey, more text for the about page</p>
+          <p class="lead">But we will add more info soon!</p>
         </div>
       </div>
     </div>
@@ -122,7 +142,7 @@
                 <i class="fas fa-search-plus fa-3x"></i>
               </div>
             </div>
-            <img class="img-fluid" src="{% static "dashboard/img/portfolio/cabin.png" %}" alt="">
+            <img class="img-fluid" src="{% static "dashboard/img/erick_velasquez.jpg" %}" alt="">
           </a>
         </div>
         <div class="col-md-6 col-lg-4">
@@ -132,7 +152,7 @@
                 <i class="fas fa-search-plus fa-3x"></i>
               </div>
             </div>
-            <img class="img-fluid" src="{% static "dashboard/img/portfolio/cake.png" %}" alt="">
+            <img class="img-fluid" src="{% static "dashboard/img/ali_hossam.jpg" %}" alt="">
           </a>
         </div>
         <div class="col-md-6 col-lg-4">
@@ -142,7 +162,7 @@
                 <i class="fas fa-search-plus fa-3x"></i>
               </div>
             </div>
-            <img class="img-fluid" src="{% static "dashboard/img/portfolio/circus.png" %}" alt="">
+            <img class="img-fluid" src="{% static "dashboard/img/alex_ford.jpg" %}" alt="">
           </a>
         </div>
         <div class="col-md-6 col-lg-4">
@@ -152,7 +172,7 @@
                 <i class="fas fa-search-plus fa-3x"></i>
               </div>
             </div>
-            <img class="img-fluid" src="{% static "dashboard/img/portfolio/game.png" %}" alt="">
+            <img class="img-fluid" src="{% static "dashboard/img/alex_lee.jpg" %}" alt="">
           </a>
         </div>
         <div class="col-md-6 col-lg-4">
@@ -162,7 +182,7 @@
                 <i class="fas fa-search-plus fa-3x"></i>
               </div>
             </div>
-            <img class="img-fluid" src="{% static "dashboard/img/portfolio/safe.png" %}" alt="">
+            <img class="img-fluid" src="{% static "dashboard/img/derinsola_david.jpg" %}" alt="">
           </a>
         </div>
       </div>
@@ -195,8 +215,8 @@
           <div class="col-lg-8 mx-auto">
             <h2 class="text-secondary text-uppercase mb-0">Erick Velasquez</h2>
             <hr class="star-dark mb-5">
-            <img class="img-fluid mb-5" src="{% static "dashboard/img/portfolio/cabin.png" %}" alt="">
-            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+            <img class="img-fluid mb-5" src="{% static "dashboard/img/erick_velasquez.jpg" %}" alt="">
+            <p class="mb-5">In charge if web technologies.</p>
             <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
               <i class="fa fa-close"></i>
               Close</a>
@@ -217,8 +237,8 @@
           <div class="col-lg-8 mx-auto">
             <h2 class="text-secondary text-uppercase mb-0">Ali Hossam</h2>
             <hr class="star-dark mb-5">
-            <img class="img-fluid mb-5" src="{% static "dashboard/img/portfolio/cake.png" %}" alt="">
-            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+            <img class="img-fluid mb-5" src="{% static "dashboard/img/ali_hossam.jpg" %}" alt="">
+            <p class="mb-5">In charge of keeping the hardware (and the team) together.</p>
             <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
               <i class="fa fa-close"></i>
               Close</a>
@@ -239,8 +259,8 @@
           <div class="col-lg-8 mx-auto">
             <h2 class="text-secondary text-uppercase mb-0">Alex Ford</h2>
             <hr class="star-dark mb-5">
-            <img class="img-fluid mb-5" src="{% static "dashboard/img/portfolio/circus.png" %}" alt="">
-            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+            <img class="img-fluid mb-5" src="{% static "dashboard/img/alex_ford.jpg" %}" alt="">
+            <p class="mb-5">Makes sure our cool hardware can connect to the server so it is not just useless (and pricey) junk.</p>
             <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
               <i class="fa fa-close"></i>
               Close</a>
@@ -261,8 +281,8 @@
           <div class="col-lg-8 mx-auto">
             <h2 class="text-secondary text-uppercase mb-0">Alex Lee</h2>
             <hr class="star-dark mb-5">
-            <img class="img-fluid mb-5" src="{% static "dashboard/img/portfolio/game.png" %}" alt="">
-            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+            <img class="img-fluid mb-5" src="{% static "dashboard/img/alex_lee.jpg" %}" alt="">
+            <p class="mb-5">Screen guru who makes sure we can show users something.</p>
             <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
               <i class="fa fa-close"></i>
               Close</a>
@@ -283,8 +303,8 @@
           <div class="col-lg-8 mx-auto">
             <h2 class="text-secondary text-uppercase mb-0">Derinsola David Ibikunle</h2>
             <hr class="star-dark mb-5">
-            <img class="img-fluid mb-5" src="{% static "dashboard/img/portfolio/safe.png" %}" alt="">
-            <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia neque assumenda ipsam nihil, molestias magnam, recusandae quos quis inventore quisquam velit asperiores, vitae? Reprehenderit soluta, eos quod consequuntur itaque. Nam.</p>
+            <img class="img-fluid mb-5" src="{% static "dashboard/img/derinsola_david.jpg" %}" alt="">
+            <p class="mb-5">How can we keep you safe if you crash if we don't know you crashed? This guy will make sure we are aware.</p>
             <a class="btn btn-primary btn-lg rounded-pill portfolio-modal-dismiss" href="#">
               <i class="fa fa-close"></i>
               Close</a>
