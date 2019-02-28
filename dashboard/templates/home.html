@@ -84,51 +84,6 @@
     </div>
   </header>
 
-  <!-- Portfolio Grid Section -->
-  <section class="portfolio" id="portfolio">
-    <div class="container">
-      <h2 class="text-center text-uppercase text-secondary mb-0">Crash Logs</h2>
-      <hr class="star-dark mb-5">
-      <div class="row">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Text</th>
-              <th scope="col">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for entry in demo_entries %}
-              <tr>
-                <th scope="row">{{ entry.id }}</th>
-                <td>{{ entry.text }}</td>
-                <td>{{ entry.save_time | localtime }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      
-    </div>
-  </section>
-
-  <!-- About Section -->
-  <section class="bg-primary text-white mb-0" id="about">
-    <div class="container">
-      <h2 class="text-center text-uppercase text-white">About</h2>
-      <hr class="star-light mb-5">
-      <div class="row">
-        <div class="col-lg-4 ml-auto">
-          <p class="lead">iCrash is under development right now.</p>
-        </div>
-        <div class="col-lg-4 mr-auto">
-          <p class="lead">But we will add more info soon!</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Contact Section -->
   <section id="contact">
     <div class="container">
@@ -184,6 +139,22 @@
             </div>
             <img class="img-fluid" src="{% static "dashboard/img/derinsola_david.jpg" %}" alt="">
           </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="bg-primary text-white mb-0" id="about">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-white">About</h2>
+      <hr class="star-light mb-5">
+      <div class="row">
+        <div class="col-lg-4 ml-auto">
+          <p class="lead">iCrash is under development right now.</p>
+        </div>
+        <div class="col-lg-4 mr-auto">
+          <p class="lead">But we will add more info soon!</p>
         </div>
       </div>
     </div>

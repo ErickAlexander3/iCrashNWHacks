@@ -23,4 +23,10 @@ urlpatterns = [
 	path('', include('allauth.urls')),
 	path('', dashboardViews.home),
 	path('demo', APIViews.demo),
+    path('user_list', APIViews.get_user_list),
+    path('emergency_contact_list', APIViews.get_emergency_contacts),
+    path('login_device', APIViews.login_device, name='login_device'),
+    path('add_device', APIViews.add_device, name='add_device'),
+    path('add_emergency_contact', APIViews.add_emergency_contact, name='add_emergency_contact'),
+    path('log_crash', APIViews.log_crash, name="log_crash"),
 ]

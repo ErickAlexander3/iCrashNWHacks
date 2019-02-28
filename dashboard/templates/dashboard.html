@@ -1,0 +1,244 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>iCrash</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="{% static "dashboard/vendor/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+
+	<!-- Custom fonts for this template -->
+	<link href="{% static "dashboard/vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+	<!-- Plugin CSS -->
+	<link href="{% static "dashboard/vendor/magnific-popup/magnific-popup.css" %}" rel="stylesheet" type="text/css">
+
+	<!-- Custom styles for this template -->
+	<link href="{% static "dashboard/css/freelancer.min.css" %}" rel="stylesheet">
+
+	<!-- Cloudinary video player -->
+	<link href="https://unpkg.com/cloudinary-video-player@1.1.1/dist/cld-video-player.min.css" 
+   rel="stylesheet">
+	<script src="https://unpkg.com/cloudinary-core@2.6.2/cloudinary-core-shrinkwrap.min.js" 
+	   type="text/javascript"></script>
+	<script src="https://unpkg.com/cloudinary-video-player@1.1.1/dist/cld-video-player.min.js" 
+	   type="text/javascript"></script>
+</head>
+
+<body id="page-top">
+	<!-- Navigation -->
+  <nav class="navbar navbar-expand-lg bg-secondary text-uppercase" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand js-scroll-trigger" href="#page-top">iCrash</a>
+      <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mx-0 mx-lg-1">
+            <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+    <!-- About Section -->
+  <section>
+    <div class="container">
+    <h2 class="text-center text-uppercase mb-0">Crash Logs</h2>
+      <hr class="star-dark mb-5">
+      <div class="row">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Time</th>
+              <th scope="col">Longitude</th>
+              <th scope="col">Latitude</th>
+              <th scope="col">Heart Rate</th>
+              <th scope="col">Video</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in crash_logs %}
+              <tr>
+                <td>{{ entry.save_time }}</td>
+                <td>{{ entry.log.longitude }}</td>
+                <td>{{ entry.log.latitude }}</td>
+                <td>{{ entry.log.heart_rate }}</td>
+                <td>
+                	<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#crash_video_{{entry.id}}">
+					  View Video
+					</button>
+				</td>
+              </tr>
+  				<!-- Modal -->
+				<div class="modal fade" id="crash_video_{{entry.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				  <div class="modal-dialog modal-lg" role="document">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="exampleModalLabel">Crash video</h5>
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body">
+							<video class="crash_player" controls  muted  class="cld-video-player cld-fluid" data-cld-public-id="{{entry.recorded_crash}}"></video>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  </section>
+
+
+  <!-- Portfolio Grid Section -->
+  <section class="bg-primary text-white mb-0">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-white">Devices</h2>
+      <hr class="star-light mb-5">
+      <div class="row">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Serial Number</th>
+              <th scope="col">PIN</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in user_pins %}
+              <tr>
+                <td>{{ entry.device.serial }}</td>
+                <td>{{ entry.pin }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- Button trigger modal -->
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deviceModal">
+		  Add
+		</button>
+
+		<!-- Modal -->
+		<div class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel">Add New Device</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+				<form action="{% url 'add_device' %}" method="post">
+					{% csrf_token %}
+				  <div class="form-group">
+				    <label for="add_device_serial">Serial Number</label>
+				    <input type="text" name="serial" class="form-control" id="add_device_serial" aria-describedby="emailHelp" placeholder="Enter serial number">
+				  </div>
+				  <div class="form-group">
+				    <label for="add_device_pin">PIN</label>
+				    <input type="text" name="pin" class="form-control" id="add_device_pin" aria-describedby="emailHelp" placeholder="Enter a 4-digit PIN">
+				  </div>
+				  <button type="submit" class="btn btn-primary">Add device</button>
+				</form>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+      </div>
+      
+    </div>
+  </section>
+
+
+  <!-- About Section -->
+  <section class="mb-0">
+    <div class="container">
+      <h2 class="text-center text-uppercase mb-0">Emergency Contacts</h2>
+      <hr class="star-dark mb-5">
+      <div class="row">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Phone Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in user_info.contacts %}
+              <tr>
+                <td>{{ entry.name }}</td>
+                <td>{{ entry.phone_number }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- Button trigger modal -->
+		<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#contactsModal">
+		  Add
+		</button>
+    </div>
+  </section>
+
+		<!-- Modal -->
+	<div class="modal fade" id="contactsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel">Add Emergency Contact</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+				<form action="{% url 'add_emergency_contact' %}"method="post">
+					{% csrf_token %}
+				  <div class="form-group">
+				    <label for="add_contact_name">Name</label>
+				    <input type="text" name="name" class="form-control" id="add_contact_name" aria-describedby="emailHelp" placeholder="Enter your contact's name">
+				  </div>
+				  <div class="form-group">
+				    <label for="add_contact_number">Phone Number</label>
+				    <input type="text" name="phone_number" class="form-control" id="add_contact_number" aria-describedby="emailHelp" placeholder="Enter your contact's phone number">
+				  </div>
+				  <button type="submit" class="btn btn-primary">Add contact</button>
+				</form>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+  	</div>
+
+	<!-- Bootstrap core JavaScript -->
+	<script src="{% static "dashboard/vendor/jquery/jquery.min.js" %}"></script>
+	<script src="{% static "dashboard/vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+	<!-- Plugin JavaScript -->
+	<script src="{% static "dashboard/vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+	<script src="{% static "dashboard/vendor/magnific-popup/jquery.magnific-popup.min.js" %}"></script>
+
+	<!-- Contact Form JavaScript -->
+	<script src="{% static "dashboard/js/jqBootstrapValidation.js" %}"></script>
+	<script src="{% static "dashboard/js/contact_me.js" %}"></script>
+
+	<!-- Custom scripts for this template -->
+	<script src="{% static "dashboard/js/freelancer.min.js" %}"></script>
+
+	<script type="text/javascript">
+		var cld = cloudinary.Cloudinary.new({ cloud_name: 'griintoday' });
+		var player = cld.videoPlayers('.crash_player');
+	</script>
+</body>
+</html>
