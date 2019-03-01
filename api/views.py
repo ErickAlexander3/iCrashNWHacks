@@ -13,7 +13,9 @@ from django.contrib.auth.models import User
 import pdb
 import json
 
-@csrf_exempt
+'''
+    Used for our Sprint Demo to send crash information from the de1 to the server
+'''
 @require_http_methods(["POST",])
 def demo(request):
     entry = DemoEntries()
@@ -22,9 +24,9 @@ def demo(request):
 
     return HttpResponse(status=204)
 
-
-@csrf_exempt
-@require_http_methods(["POST",])
+'''
+    Get a json-formatted list of users for a specific device
+'''
 def get_user_list(request):
     data = json.loads(request.body)
     serial = data.get("serial")
@@ -36,10 +38,12 @@ def get_user_list(request):
 
     return JsonResponse({"users": users})
 
-@csrf_exempt
-@require_http_methods(["POST",])
+'''
+    Get a json-formatted list of emergency contacts for a specific user.
+    Update: Due to the complexity of the parsing in our WIFI chip, we changed this to
+    a comma-separated string
+'''
 def get_emergency_contacts(request):
-    #pdb.set_trace()
     data = json.loads(request.body)
     username = data.get("user")
     contacts = ""
@@ -53,6 +57,9 @@ def get_emergency_contacts(request):
     
     return HttpResponse(contacts)
 
+'''
+    Add a user to the list of users for a device, with a specific PIN for login
+'''
 @require_http_methods(["POST",])
 @login_required
 def add_device(request):
@@ -67,6 +74,10 @@ def add_device(request):
     return redirect("/")
 
 
+
+'''
+    Add an emergency contact to the list of contafts for a specific user
+'''
 @require_http_methods(["POST",])
 @login_required
 def add_emergency_contact(request):
@@ -82,7 +93,11 @@ def add_emergency_contact(request):
     return redirect("/")
 
 
-@csrf_exempt
+'''
+    Authenticate the credentials of a user given a device and a login PIN.
+    Note: This will not authenticate the user in the server, but it will tell
+    our demo device whether those credentials are valid or not
+'''
 @require_http_methods(["POST",])
 def login_device(request):
     data = json.loads(request.body)
@@ -97,7 +112,10 @@ def login_device(request):
     else:
         return HttpResponse(status=403)
 
-@csrf_exempt
+'''
+    After a crash, send the log to the server, including the public id for the video
+    uploaded to Cloudinary
+'''
 @require_http_methods(["POST",])
 def log_crash(request):
     #pdb.set_trace()

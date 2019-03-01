@@ -6,8 +6,10 @@ from django.views.decorators.http import require_http_methods
 from api.models import DemoEntries, Device, UserPin, UserInfo, CrashLog
 
 import pdb
-# Create your views here.
 
+"""
+	Return the landing page if not authenticated, or the dashboard if authenticated
+"""
 def home(request):
     if request.user.is_authenticated:
         user_pins = UserPin.objects.filter(user=request.user)
