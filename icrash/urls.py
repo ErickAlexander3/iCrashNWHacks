@@ -18,11 +18,13 @@ from django.urls import include, path
 
 from dashboard import views as dashboardViews
 from api import views as APIViews
+from allauth.account.views import LoginView, SignupView 
 
 urlpatterns = [
-	path('', include('allauth.urls')),
-	path('', dashboardViews.home),
-	path('demo', APIViews.demo),
+    path('', include('allauth.urls')),
+    path('api-auth', include('rest_framework.urls')),
+    path('', dashboardViews.home),
+    path('demo', APIViews.demo),
     path('user_list', APIViews.get_user_list),
     path('emergency_contact_list', APIViews.get_emergency_contacts),
     path('login_device', APIViews.login_device, name='login_device'),

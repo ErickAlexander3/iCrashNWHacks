@@ -16,7 +16,7 @@ class DemoEntries(models.Model):
 '''
 class UserInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    info = HStoreField(null=True)
+    emergency_service_provider = models.BooleanField(default=False)
     contacts = JSONField(default=list)
 
 '''
