@@ -23,6 +23,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'emergency_service_info', APIViews.EmergencyServiceViewSet, basename='emergency_service_info')
+router.register(r'crash_points', APIViews.CrashPointViewSet, basename='crash_point')
 
 urlpatterns = [
     path('', include('allauth.urls')),

@@ -14,7 +14,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import EmergencyContactsSerializer, CrashLogSerializer
+from .serializers import EmergencyContactsSerializer, CrashLogSerializer, CrashPointSerializer
 from .permissions import EmergencyServicePermission
 import pdb
 import json
@@ -171,7 +171,20 @@ class EmergencyServiceViewSet(viewsets.ViewSet):
         emergency_contacts_serializer = EmergencyContactsSerializer(user_to_query.userinfo)
         crash_log_serializer = CrashLogSerializer(CrashLog.objects.filter(user=user_to_query), many=True)
 
+        return Response(crash_log_serializer.data)
+
+        """
         return Response({
             'crash_logs': crash_log_serializer.data,
             'emergency_contacts': emergency_contacts_serializer.data,
         })
+        """
+
+class CrashPointViewSet(viewsets.ViewSet):
+    #permission_classes = [IsAuthenticated, EmergencyServicePermission]
+
+    def list(self, request):
+        queryset = CrashLog.objects.all()
+        crash_points_serializer = CrashPointSerializer(queryset, many=True)
+
+        return Response(crash_points_serializer.data)
