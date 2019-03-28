@@ -10,6 +10,12 @@ from django.http import JsonResponse
 
 from django.contrib.auth.models import User
 
+from rest_framework import status, viewsets
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import EmergencyContactsSerializer, CrashLogSerializer
+from .permissions import EmergencyServicePermission
 import pdb
 import json
 
@@ -92,6 +98,21 @@ def add_emergency_contact(request):
     
     return redirect("/")
 
+'''
+    Edit User Info to change the user's license plate
+'''
+@require_http_methods(["POST",])
+@login_required
+def edit_user_info(request):
+    license_plate = request.POST.get("license_plate")
+    user_info = UserInfo.objects.filter(user=request.user).first()
+    pdb.set_trace()
+    if user_info and license_plate:
+        pdb.set_trace()
+        user_info.license_plate = license_plate
+        user_info.save()
+    
+    return redirect("/")
 
 '''
     Authenticate the credentials of a user given a device and a login PIN.
@@ -129,3 +150,28 @@ def log_crash(request):
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
+
+
+
+
+class EmergencyServiceViewSet(viewsets.ViewSet):
+    #permission_classes = [IsAuthenticated, EmergencyServicePermission]
+
+    def list(self, request):
+        license_plate = request.GET.get('license_plate')
+        if license_plate is None:
+            return Response("Please enter a license plate",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        user_to_query = User.objects.filter(userinfo__license_plate=license_plate).first()
+        if user_to_query is None:
+            return Response("Not a valid license plate",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        emergency_contacts_serializer = EmergencyContactsSerializer(user_to_query.userinfo)
+        crash_log_serializer = CrashLogSerializer(CrashLog.objects.filter(user=user_to_query), many=True)
+
+        return Response({
+            'crash_logs': crash_log_serializer.data,
+            'emergency_contacts': emergency_contacts_serializer.data,
+        })

@@ -18,11 +18,17 @@ from django.urls import include, path
 
 from dashboard import views as dashboardViews
 from api import views as APIViews
-from allauth.account.views import LoginView, SignupView 
+
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'emergency_service_info', APIViews.EmergencyServiceViewSet, basename='emergency_service_info')
 
 urlpatterns = [
     path('', include('allauth.urls')),
-    path('api-auth', include('rest_framework.urls')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('api/', include(router.urls)),
     path('', dashboardViews.home),
     path('demo', APIViews.demo),
     path('user_list', APIViews.get_user_list),
@@ -30,5 +36,6 @@ urlpatterns = [
     path('login_device', APIViews.login_device, name='login_device'),
     path('add_device', APIViews.add_device, name='add_device'),
     path('add_emergency_contact', APIViews.add_emergency_contact, name='add_emergency_contact'),
+    path('edit_user_info', APIViews.edit_user_info, name='edit_user_info'),
     path('log_crash', APIViews.log_crash, name="log_crash"),
 ]
