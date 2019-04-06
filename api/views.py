@@ -7,17 +7,22 @@ from django.shortcuts import redirect
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.db.models import Q
 
 from django.contrib.auth.models import User
 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 
-from .serializers import EmergencyContactsSerializer, CrashLogSerializer, CrashPointSerializer
+from .predictions import generate_predicted_points
+from .serializers import EmergencyContactsSerializer, CrashLogSerializer, CrashPointSerializer, LivePointSerializer
 from .permissions import EmergencyServicePermission
 import pdb
 import json
+import requests
+import random
 
 '''
     Used for our Sprint Demo to send crash information from the de1 to the server
@@ -106,9 +111,7 @@ def add_emergency_contact(request):
 def edit_user_info(request):
     license_plate = request.POST.get("license_plate")
     user_info = UserInfo.objects.filter(user=request.user).first()
-    pdb.set_trace()
     if user_info and license_plate:
-        pdb.set_trace()
         user_info.license_plate = license_plate
         user_info.save()
     
@@ -133,6 +136,20 @@ def login_device(request):
     else:
         return HttpResponse(status=403)
 
+
+def send_new_crash_notification():
+    header = {"Content-Type": "application/json; charset=utf-8",
+          "Authorization": "Basic ZmQ2NWRmNGItNGU3Yy00YjE0LTlkZDYtM2I2ZGUzZjEwODNl"}
+
+    payload = {"app_id": "9c62a200-025b-486a-92ee-46219dc9d245",
+       "included_segments": ["All"],
+       "contents": {"en": "New crash just occured"}
+    }
+
+    req = requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
+
+    return req
+
 '''
     After a crash, send the log to the server, including the public id for the video
     uploaded to Cloudinary
@@ -147,6 +164,7 @@ def log_crash(request):
     user = User.objects.filter(username=username).first()
     if user:
         new_log = CrashLog.objects.create(user=user, log=log, recorded_crash=recorded_crash)
+        send_new_crash_notification()
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
@@ -169,22 +187,70 @@ class EmergencyServiceViewSet(viewsets.ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         emergency_contacts_serializer = EmergencyContactsSerializer(user_to_query.userinfo)
-        crash_log_serializer = CrashLogSerializer(CrashLog.objects.filter(user=user_to_query), many=True)
-
-        return Response(crash_log_serializer.data)
-
-        """
+        crash_log_serializer = CrashLogSerializer(CrashLog.objects.filter(user=user_to_query).order_by('-save_time'), many=True)
+        
         return Response({
+            'username': user_to_query.username,
+            'crash_count': len(crash_log_serializer.data),
             'crash_logs': crash_log_serializer.data,
-            'emergency_contacts': emergency_contacts_serializer.data,
+            #'emergency_contacts': emergency_contacts_serializer.data,
         })
-        """
+        
 
 class CrashPointViewSet(viewsets.ViewSet):
-    #permission_classes = [IsAuthenticated, EmergencyServicePermission]
+    permission_classes = [IsAuthenticated, EmergencyServicePermission]
 
     def list(self, request):
         queryset = CrashLog.objects.all()
         crash_points_serializer = CrashPointSerializer(queryset, many=True)
 
         return Response(crash_points_serializer.data)
+
+    
+    def create(self, request):
+        #get random crash log
+        random_crash_log = CrashLog.objects.random().first()
+        random_crash_log.log["latitude"] = request.data.get("latitude")
+        random_crash_log.log["longitude"] = request.data.get("longitude")
+
+        new_log = CrashLog.objects.create(user=random_crash_log.user, 
+                                          log=random_crash_log.log,
+                                          recorded_crash=random_crash_log.recorded_crash)
+
+        req = send_new_crash_notification()
+        return Response("point with random log data added")
+
+    @action(detail=False, methods=['get'])
+    def live_crashes(self, request):
+        queryset = CrashLog.objects.filter(~Q(state=CrashLog.STATE.done))
+        crash_points_serializer = LivePointSerializer(queryset, context={'request': request}, many=True)
+
+        return Response(crash_points_serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def attend_crash(self, request):
+        crash_log = CrashLog.objects.get(id=request.data.get('id'))
+        if crash_log.state == CrashLog.STATE.open:
+            crash_log.state = CrashLog.STATE.inprogress
+            crash_log.attending_emergency_provider = request.user
+            crash_log.save()
+            return Response("Attending crash", status=status.HTTP_200_OK)
+        else:
+            return Response("Crash log was either taken or not available",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def complete_crash(self, request):
+        crash_log = CrashLog.objects.get(id=request.data.get('id'))
+        if crash_log.state == CrashLog.STATE.inprogress and crash_log.attending_emergency_provider == request.user:
+            crash_log.state = CrashLog.STATE.done
+            crash_log.save()
+            return Response("Crash completed", status=status.HTTP_200_OK)
+        else:
+            return Response("Crash log was either not assigned or you had no permission to change it",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def predicted(self, request):
+        return Response(generate_predicted_points())
+

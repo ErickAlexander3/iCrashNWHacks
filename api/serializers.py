@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CrashLog, UserInfo
 from django.contrib.auth.models import User
+import pdb
 
 class EmergencyContactsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,3 +31,21 @@ class CrashPointSerializer(serializers.ModelSerializer):
 
     def get_latitude(self, obj):
         return float(obj.log.get('latitude'))
+
+class LivePointSerializer(serializers.ModelSerializer):
+    longitude = serializers.SerializerMethodField()
+    latitude = serializers.SerializerMethodField()
+    mine = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CrashLog
+        fields = ('id', 'longitude', 'latitude', 'state', 'mine')
+
+    def get_longitude(self, obj):
+        return float(obj.log.get('longitude'))
+
+    def get_latitude(self, obj):
+        return float(obj.log.get('latitude'))
+
+    def get_mine(self, obj):
+        return self.context['request'].user == obj.attending_emergency_provider

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
+from model_utils import Choices
+from django_random_queryset import RandomManager
 
 '''
     Sprint Demo entries used for testing the sending of data from
@@ -41,7 +43,12 @@ class UserPin(models.Model):
     Cloudinary
 '''
 class CrashLog(models.Model):
+    objects = RandomManager()
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     log = JSONField()
     save_time = models.DateTimeField(auto_now_add=True)
     recorded_crash = models.TextField()
+    STATE = Choices((0, 'open', 'open'), (1, 'inprogress', 'inprogress'), (2, 'done', 'done'))
+    state = models.IntegerField(choices=STATE, default=STATE.open)
+    attending_emergency_provider = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='crash_logs_attending')
